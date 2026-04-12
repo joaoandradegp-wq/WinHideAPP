@@ -1004,6 +1004,7 @@ object Form1: TForm1
     Top = 8
   end
   object Timer1: TTimer
+    Interval = 500
     OnTimer = Timer1Timer
     Left = 40
     Top = 8

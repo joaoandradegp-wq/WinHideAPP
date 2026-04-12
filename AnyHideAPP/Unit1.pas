@@ -46,44 +46,25 @@ implementation
 
 {$R *.dfm}
 
-function EnumChildProc(h: HWND; lParam: LPARAM): BOOL; stdcall;
+procedure KillFromTaskbar(h: HWND);
 begin
-  Result := True;
+  // remove da barra
+  SetWindowLong(h, GWL_EXSTYLE,
+    GetWindowLong(h, GWL_EXSTYLE) or WS_EX_TOOLWINDOW);
 
-  if IsWindowVisible(h) then
-    Form1.HideWindow(h);
-end;
+  // força minimizar (sem fechar sessão)
+  ShowWindow(h, SW_FORCEMINIMIZE);
 
-function GetAnyDeskPID: DWORD;
-var
-  Snap: THandle;
-  ProcEntry: TProcessEntry32;
-begin
-  Result := 0;
-
-  Snap := CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
-  ProcEntry.dwSize := SizeOf(ProcEntry);
-
-  if Process32First(Snap, ProcEntry) then
-  begin
-    repeat
-      if SameText(ProcEntry.szExeFile, 'AnyDesk.exe') then
-      begin
-        Result := ProcEntry.th32ProcessID;
-        Break;
-      end;
-    until not Process32Next(Snap, ProcEntry);
-  end;
-
-  CloseHandle(Snap);
+  // tira foco
+  ShowWindow(h, SW_HIDE);
 end;
 
 function GetClassNameStr(h: HWND): string;
 var
-  Buffer: array[0..255] of Char;
+  Buf: array[0..255] of Char;
 begin
-  GetClassName(h, Buffer, 255);
-  Result := Buffer;
+  GetClassName(h, Buf, Length(Buf));
+  Result := Buf;
 end;
 
 function GetProcessName(h: HWND): string;
@@ -106,22 +87,40 @@ GetWindowThreadProcessId(h, @PID);
 
 end;
 
+procedure RemoveFromTaskbar(h: HWND);
+var
+  ExStyle: Longint;
+begin
+  ExStyle := GetWindowLong(h, GWL_EXSTYLE);
+
+  // remove da barra de tarefas
+  ExStyle := ExStyle and not WS_EX_APPWINDOW;
+
+  // adiciona como toolwindow
+  ExStyle := ExStyle or WS_EX_TOOLWINDOW;
+
+  SetWindowLong(h, GWL_EXSTYLE, ExStyle);
+
+  SetWindowPos(h, 0, 0, 0, 0, 0,
+    SWP_NOMOVE or SWP_NOSIZE or SWP_NOZORDER or SWP_FRAMECHANGED);
+end;
+
 function EnumWindowsProc(h: HWND; lParam: LPARAM): BOOL; stdcall;
 var
-  PID: DWORD;
+  ProcName: string;
+  ClassName: string;
 begin
   Result := True;
 
-  GetWindowThreadProcessId(h, @PID);
+  ProcName := GetProcessName(h);
+  ClassName := LowerCase(GetClassNameStr(h));
 
-  if PID = lParam then
+  if SameText(ProcName, 'AnyDesk.exe') then
   begin
-    // esconde a janela principal
-    if IsWindowVisible(h) then
-      Form1.HideWindow(h);
-
-    // ?? AGORA O SEGREDO
-    EnumChildWindows(h, @EnumChildProc, 0);
+    if Pos('ad_win', ClassName) > 0 then
+    begin
+      RemoveFromTaskbar(h);
+    end;
   end;
 end;
 
@@ -156,6 +155,7 @@ begin
   ShowWindow(h, SW_HIDE);
 end;           }
 
+
 procedure TForm1.RestoreAllWindows;
 var
 i: Integer;
@@ -174,22 +174,19 @@ SetLength(HiddenList, 0);
 end;
 
 procedure TForm1.WMHotKey(var Msg: TMessage);
-var
-h: HWND;
 begin
-
   if Msg.WParam = HOTKEY_ID then
   begin
-    if GetAsyncKeyState(VK_SHIFT) <> 0 then
-    begin
-    RestoreAllWindows;
-    Exit;
-    end;
-  h:=GetForegroundWindow;
-    if (h <> 0) and (h <> Handle) then
-    HideWindow(h);
-  end;
+    // força minimizar qualquer janela ativa (inclusive AnyDesk)
+    keybd_event(VK_MENU, 0, 0, 0);
+    keybd_event(VK_SPACE, 0, 0, 0);
+    keybd_event(VK_SPACE, 0, KEYEVENTF_KEYUP, 0);
 
+    keybd_event(Ord('N'), 0, 0, 0);
+    keybd_event(Ord('N'), 0, KEYEVENTF_KEYUP, 0);
+
+    keybd_event(VK_MENU, 0, KEYEVENTF_KEYUP, 0);
+  end;
 end;
 
 procedure TForm1.FormCreate(Sender: TObject);
@@ -247,13 +244,9 @@ ShellExecute(0, 'open', 'https://phobosfreeware.blogspot.com', nil, nil, SW_SHOW
 end;
 
 procedure TForm1.Timer1Timer(Sender: TObject);
-var
-  pid: DWORD;
-begin
-  pid := GetAnyDeskPID;
 
-  if pid <> 0 then
-    EnumWindows(@EnumWindowsProc, pid);
+begin
+EnumWindows(@EnumWindowsProc, 0);
 end;
 
 end.

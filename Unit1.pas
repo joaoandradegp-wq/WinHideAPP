@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, RXShell, StdCtrls, ComCtrls, GraphicEx, ExtCtrls, ShellAPI;
+  Dialogs, RXShell, StdCtrls, ComCtrls, GraphicEx, ExtCtrls, ShellAPI, jpeg;
 
 const
   HOTKEY_ID = 1;

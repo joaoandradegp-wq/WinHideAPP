@@ -8,7 +8,7 @@ uses
 
 begin
   Application.Initialize;
-  Application.Title := 'WinHideAPP v1.0';
+  Application.Title := 'WinHideAPP v1.1';
   Application.CreateForm(TForm1, Form1);
   Application.Run;
 end.

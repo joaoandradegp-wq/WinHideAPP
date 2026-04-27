@@ -33,7 +33,7 @@ The program we are talking about is **WinHideApp**, an open-source software that
 ## 📸 Preview
 
 <p align="center">
-  <img width="340" height="152" alt="image" src="https://github.com/user-attachments/assets/0ab8d16a-cc75-4068-b559-55d147f60efa" />
+  <img width="340" height="152" alt="image" src="https://github.com/user-attachments/assets/01ca7d07-1bd7-403a-87bb-8a34447c5f9e" />
 </p>
 
 ---

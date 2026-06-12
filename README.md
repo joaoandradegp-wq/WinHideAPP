@@ -38,16 +38,6 @@ The program we are talking about is **WinHideApp**, an open-source software that
 
 ---
 
-## 📥 Download
-
 <p align="center">
-  <a href="#">
-    <img src="https://img.shields.io/badge/Download-WinHideApp-blue?style=for-the-badge">
-  </a>
-</p>
-
----
-
-<p align="center">
-Built for simplicity and privacy 🕶️
+Built for simplicity and privacy. 🔒
 </p>

@@ -12,7 +12,7 @@ Simple and lightweight tool to hide running applications and protect your privac
 
 ---
 
-## Overview
+## ✨ Overview
 
 Learn how to hide running applications on your computer to maintain your privacy while using it.
 
@@ -22,7 +22,7 @@ The program we are talking about is **WinHideApp**, an open-source software that
 
 ---
 
-## How it works
+## ⚙️ How it works
 
 - Press **CTRL + ALT + H** on any active window to instantly hide it  
 - The application starts minimized in the system tray (near the clock)  
